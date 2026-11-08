@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Categories — Video Admin</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside id="app-sidebar" class="app-sidebar"></aside>
+
+    <div class="app-main">
+      <header id="app-header" class="app-header"></header>
+
+      <main class="app-content">
+        <!-- Add Category Form Card -->
+        <div class="card" style="margin-bottom: 2rem;">
+          <div class="card-header">
+            <h2 class="card-title">Add New Category</h2>
+          </div>
+          <form id="add-category-form" class="card-body" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 220px;">
+              <label for="new-category-name" class="form-label">Category Name <span class="required">*</span></label>
+              <input type="text" id="new-category-name" class="form-input" placeholder="e.g. Livestreams" required>
+            </div>
+            <div style="flex: 2; min-width: 280px;">
+              <label for="new-category-desc" class="form-label">Description</label>
+              <input type="text" id="new-category-desc" class="form-input" placeholder="Short description of this category...">
+            </div>
+            <button type="submit" class="btn btn-primary" style="height: 42px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add Category</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Categories Grid -->
+        <div id="categories-grid" class="categories-grid">
+          <!-- Populated dynamically via categories.js -->
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { CategoriesPage } from './assets/js/pages/categories.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      CategoriesPage.init();
+    });
+  </script>
+</body>
+</html>

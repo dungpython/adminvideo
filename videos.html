@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Library — Video Admin</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar rendered via JavaScript component -->
+    <aside id="app-sidebar" class="app-sidebar"></aside>
+
+    <div class="app-main">
+      <!-- Header rendered via JavaScript component -->
+      <header id="app-header" class="app-header"></header>
+
+      <main class="app-content">
+        <!-- Main Data Card -->
+        <div id="table-card-container" class="card table-card">
+          <!-- Toolbar (Search, Filter, Sort, Add) -->
+          <div class="table-toolbar">
+            <div class="table-toolbar-left">
+              <div class="search-input-wrapper">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input 
+                  type="search" 
+                  id="video-search-input" 
+                  class="form-input" 
+                  placeholder="Search video titles..."
+                  aria-label="Search video titles"
+                >
+              </div>
+
+              <select id="category-filter" class="form-select" style="max-width: 180px;" aria-label="Filter by category">
+                <option value="">All Categories</option>
+              </select>
+            </div>
+
+            <div class="table-toolbar-right">
+              <label for="sort-select" style="font-size: var(--font-size-xs); color: var(--color-text-muted); font-weight: 500;">Sort:</label>
+              <select id="sort-select" class="form-select" style="max-width: 170px;" aria-label="Sort videos">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="title">Title (A to Z)</option>
+                <option value="views-high">Views (High to Low)</option>
+                <option value="views-low">Views (Low to High)</option>
+              </select>
+
+              <a href="video-form.html" class="btn btn-primary btn-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add Video</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Video Data Table -->
+          <div class="table-responsive">
+            <table class="data-table" aria-label="Video Records">
+              <thead>
+                <tr>
+                  <th scope="col" style="width: 70px;">ID</th>
+                  <th scope="col">Video</th>
+                  <th scope="col" style="width: 140px;">Views</th>
+                  <th scope="col" style="width: 140px;">Created Date</th>
+                  <th scope="col" style="width: 180px; text-align: right; padding-right: 1.5rem;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="video-table-body">
+                <!-- Dynamically populated via videos.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div id="pagination-container" class="pagination-container">
+            <div id="pagination-info" class="pagination-info">Showing 0 to 0 of 0 videos</div>
+            <div id="pagination-controls" class="pagination-controls">
+              <!-- Dynamically populated page buttons -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State (Shown when search/filter has 0 matches) -->
+        <div id="video-empty-state" class="card empty-state" style="display: none;">
+          <div class="empty-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+          <h3 class="empty-title">No videos found</h3>
+          <p class="empty-desc">We couldn't find any videos matching your active search or category filters.</p>
+          <button id="clear-filters-btn" class="btn btn-secondary btn-sm" type="button">Clear Filters</button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { VideosPage } from './assets/js/pages/videos.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      VideosPage.init();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phân Quyền (Permission Management) — Video Admin</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar rendered via JavaScript component -->
+    <aside id="app-sidebar" class="app-sidebar"></aside>
+
+    <div class="app-main">
+      <!-- Header rendered via JavaScript component -->
+      <header id="app-header" class="app-header"></header>
+
+      <main class="app-content">
+        <!-- Role Simulator Banner (Dùng để kiểm thử vai trò ADMIN vs USER) -->
+        <div class="card" style="margin-bottom: 1.5rem; background: #fdfefe; border-left: 4px solid var(--color-primary);">
+          <div class="card-body" style="padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+              <div style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: var(--color-primary-light); color: var(--color-primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+              <div>
+                <div style="font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text);">
+                  Trình giả lập tài khoản & vai trò (Role Switcher)
+                </div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);">
+                  Chuyển đổi giữa ADMIN và USER để kiểm tra cơ chế phân quyền bảo vệ trang này.
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <label for="simulate-user-select" style="font-size: var(--font-size-xs); font-weight: 600; color: var(--color-text-muted);">
+                Đang xem với tư cách:
+              </label>
+              <select id="simulate-user-select" class="form-select" style="max-width: 260px; font-weight: 500;">
+                <!-- Populated dynamically via permissions.js -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Access Denied State (Hiển thị khi tài khoản hiện tại là USER) -->
+        <div id="access-denied-view" class="card empty-state" style="display: none; padding: 4.5rem 2rem;">
+          <div class="empty-icon" style="background-color: var(--color-danger-bg); color: var(--color-danger); width: 64px; height: 64px;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h2 class="empty-title" style="font-size: var(--font-size-xl); margin-top: 0.5rem;">Quyền truy cập bị từ chối (Access Denied)</h2>
+          <p class="empty-desc" style="max-width: 480px; margin-top: 0.5rem; margin-bottom: 1.5rem;">
+            Trang <strong>Phân Quyền (Permission Management)</strong> chỉ dành riêng cho tài khoản có vai trò <strong>ADMIN</strong>. Tài khoản hiện tại của bạn là <span class="badge badge-secondary" style="font-weight: 700;">USER</span> nên không được phép xem hoặc chỉnh sửa quyền hạn.
+          </p>
+          <button id="switch-to-admin-btn" class="btn btn-primary" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Chuyển lại về quyền ADMIN</span>
+          </button>
+        </div>
+
+        <!-- Admin View Area (Chỉ hiển thị khi tài khoản hiện tại là ADMIN) -->
+        <div id="admin-permission-view">
+          <!-- Summary KPI Cards -->
+          <section class="kpi-grid" aria-label="Thống kê người dùng">
+            <!-- Total Accounts -->
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <span class="kpi-label">Tổng tài khoản</span>
+                <span id="kpi-total-users" class="kpi-value">0</span>
+                <span class="kpi-subtext">Trong hệ thống</span>
+              </div>
+              <div class="kpi-icon-wrap" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Total Admins -->
+            <div class="kpi-card">
+              <div class="kpi-content">
+                <span class="kpi-label">Quản trị viên (ADMIN)</span>
+                <span id="kpi-total-admins" class="kpi-value">0</span>
+                <span class="kpi-subtext">Có toàn quyền quản lý</span>
+              </div>
+              <div class="kpi-icon-wrap" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Total Users -->
+            <div class="kpi-card views-card">
+              <div class="kpi-content">
+                <span class="kpi-label">Người dùng thường (USER)</span>
+                <span id="kpi-total-regular-users" class="kpi-value">0</span>
+                <span class="kpi-subtext">Xem nội dung thông thường</span>
+              </div>
+              <div class="kpi-icon-wrap" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="7" r="4"></circle>
+                  <path d="M6 21v-2a6 6 0 0 1 12 0v2"></path>
+                </svg>
+              </div>
+            </div>
+          </section>
+
+          <!-- Main Table Card -->
+          <div class="card table-card">
+            <!-- Toolbar -->
+            <div class="table-toolbar">
+              <div class="table-toolbar-left">
+                <!-- Search Input -->
+                <div class="search-input-wrapper">
+                  <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <input 
+                    type="search" 
+                    id="user-search-input" 
+                    class="form-input" 
+                    placeholder="Tìm theo tên hoặc email..." 
+                    aria-label="Tìm kiếm người dùng"
+                  >
+                </div>
+
+                <!-- Role Filter -->
+                <select id="role-filter" class="form-select" style="max-width: 170px;" aria-label="Lọc theo vai trò">
+                  <option value="">Tất cả vai trò</option>
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="USER">USER</option>
+                </select>
+              </div>
+
+              <div class="table-toolbar-right" style="gap: 0.5rem; flex-wrap: wrap;">
+                <!-- Supabase Cloud Connection Status Badge -->
+                <span id="supabase-status-badge" class="badge badge-secondary" style="font-size: 11px; padding: 5px 9px; gap: 5px; font-weight: 500;" title="Trạng thái kết nối Supabase Cloud">
+                  <span id="supabase-dot" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:#d98a16;"></span>
+                  <span id="supabase-status-text">Supabase: Đang kết nối...</span>
+                </span>
+
+                <!-- Sync to Supabase Button -->
+                <button id="sync-supabase-btn" class="btn btn-outline btn-sm" type="button" title="Đồng bộ danh sách người dùng lên cơ sở dữ liệu Supabase">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  <span>Đồng bộ Supabase</span>
+                </button>
+
+                <button id="reset-users-btn" class="btn btn-secondary btn-sm" type="button" title="Khôi phục lại 1 Admin + 10 User mẫu ban đầu">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                  <span>Reset mẫu</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="table-responsive">
+              <table class="data-table" aria-label="Danh sách tài khoản và phân quyền">
+                <thead>
+                  <tr>
+                    <th scope="col" style="width: 70px;">ID</th>
+                    <th scope="col">Tài khoản & Người dùng</th>
+                    <th scope="col" style="width: 150px;">Vai trò hiện tại</th>
+                    <th scope="col" style="width: 140px;">Trạng thái</th>
+                    <th scope="col" style="width: 160px;">Ngày tạo</th>
+                    <th scope="col" style="width: 210px; text-align: right; padding-right: 1.5rem;">Thay đổi quyền (Role)</th>
+                  </tr>
+                </thead>
+                <tbody id="users-table-body">
+                  <!-- Populated dynamically via permissions.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Empty Table State -->
+            <div id="users-empty-state" class="empty-state" style="display: none;">
+              <div class="empty-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+              <h3 class="empty-title">Không tìm thấy tài khoản nào</h3>
+              <p class="empty-desc">Không có tài khoản nào khớp với từ khóa tìm kiếm hoặc bộ lọc vai trò hiện tại.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { PermissionsPage } from './assets/js/pages/permissions.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      PermissionsPage.init();
+    });
+  </script>
+</body>
+</html>

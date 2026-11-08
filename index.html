@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Video Admin</title>
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/variables.css">
+  <link rel="stylesheet" href="assets/css/layout.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/pages.css">
+  <!-- Chart.js CDN for interactive charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar rendered via JavaScript component -->
+    <aside id="app-sidebar" class="app-sidebar"></aside>
+
+    <div class="app-main">
+      <!-- Header rendered via JavaScript component -->
+      <header id="app-header" class="app-header"></header>
+
+      <main class="app-content">
+        <!-- KPI Cards Grid -->
+        <section class="kpi-grid" aria-label="Key Performance Indicators">
+          <!-- Total Videos -->
+          <div class="kpi-card">
+            <div class="kpi-content">
+              <span class="kpi-label">Total Videos</span>
+              <span id="kpi-total-videos" class="kpi-value">0</span>
+              <span class="kpi-subtext">Active library records</span>
+            </div>
+            <div class="kpi-icon-wrap" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                <line x1="7" y1="2" x2="7" y2="22"></line>
+                <line x1="17" y1="2" x2="17" y2="22"></line>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Total Views -->
+          <div class="kpi-card views-card">
+            <div class="kpi-content">
+              <span class="kpi-label">Total Views</span>
+              <span id="kpi-total-views" class="kpi-value">0</span>
+              <span class="kpi-subtext">Sum of view events</span>
+            </div>
+            <div class="kpi-icon-wrap" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Storage Used -->
+          <div class="kpi-card storage-card">
+            <div class="kpi-content">
+              <span class="kpi-label">Storage Used</span>
+              <span id="kpi-storage-used" class="kpi-value">0 B</span>
+              <span class="kpi-subtext">Declared video file sizes</span>
+            </div>
+            <div class="kpi-icon-wrap" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 12H2"></path>
+                <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+                <line x1="6" y1="16" x2="6.01" y2="16"></line>
+                <line x1="10" y1="16" x2="10.01" y2="16"></line>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts Grid -->
+        <section class="charts-grid" aria-label="Visual Analytics">
+          <!-- Top 10 Videos Bar Chart -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Top 10 Videos by Views</h2>
+                <p class="card-subtitle">Highest performing titles in the catalog</p>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="topVideosChart" aria-label="Bar chart of top 10 videos by views" role="img"></canvas>
+            </div>
+          </div>
+
+          <!-- Views Over Time Line Chart -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">Views Over Time</h2>
+                <p class="card-subtitle">Aggregated viewing trend analysis</p>
+              </div>
+              <!-- Day / Month Segmented Control -->
+              <div class="segmented-control" role="group" aria-label="Time aggregation period">
+                <button id="toggle-day-btn" class="segmented-btn active" type="button">Day</button>
+                <button id="toggle-month-btn" class="segmented-btn" type="button">Month</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <canvas id="viewsOverTimeChart" aria-label="Line chart showing views over time" role="img"></canvas>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script type="module">
+    import { DashboardPage } from './assets/js/pages/dashboard.js';
+    document.addEventListener('DOMContentLoaded', () => {
+      DashboardPage.init();
+    });
+  </script>
+</body>
+</html>
